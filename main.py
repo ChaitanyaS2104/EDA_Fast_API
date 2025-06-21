@@ -94,4 +94,6 @@ async def analyze_csv(file: UploadFile = File(...)):
     ]
     response["top_correlations"] = top_corr_list
 
+    response["correlation_matrix"] = df.corr(numeric_only=True).to_dict()
+
     return JSONResponse(content=response)
