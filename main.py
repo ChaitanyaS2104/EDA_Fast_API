@@ -94,6 +94,15 @@ async def analyze_csv(file: UploadFile = File(...)):
     ]
     response["top_correlations"] = top_corr_list
 
-    response["correlation_matrix"] = df.corr(numeric_only=True).to_dict()
+    # Get all numeric columns
+    numeric_cols = df.select_dtypes(include="number").columns.tolist()
+
+    # If there are at least 2 numeric columns, compute the correlation between the first two
+    if len(numeric_cols) >= 2:
+        selected_cols = numeric_cols[:2]  # First two numeric columns
+        corr_matrix = df[selected_cols].corr()
+        response["correlation_matrix"] = corr_matrix.to_dict()
+    else:
+        response["correlation_matrix"] = {}  # Not enough numeric columns
 
     return JSONResponse(content=response)
